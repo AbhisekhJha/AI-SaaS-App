@@ -10,5 +10,14 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
-  modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/ui']
+  modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/ui',"nuxt-auth-utils"],
+  runtimeConfig: {
+  
+    supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_KEY,
+    
+    public: {
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+    },
+  }
 })
