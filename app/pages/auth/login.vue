@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { useAuth } from "~/composable/useAuth";
 
 const schema = z.object({
   email: z.email("Invalid email address"),
@@ -14,8 +15,36 @@ const state = reactive<Partial<Schema>>({
   password: undefined,
 });
 
+const { login, isLoading, errorMessage, clearError } = useAuth();
+const toast = useToast();
+
+onMounted(() => {
+  clearError();
+});
+
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log(event.data);
+   isLoading.value = true;
+  errorMessage.value = "";
+
+   try {
+
+    
+    
+     await login(event.data.email, event.data.password);
+     toast.add({
+       title: "Login successful",
+       description: "Welcome back!",
+       color: "success",
+       duration: 1000,
+     });
+     await navigateTo("/dashboard");
+  } catch (error:  any) {
+    
+    errorMessage.value = error.data?.message || "Failed to login";
+  } finally {
+    isLoading.value = false;
+  }
 }
 </script>
 
@@ -28,6 +57,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </div>
       </template>
       <div class="space-y-4">
+        
+        <UAlert
+          v-if="errorMessage"
+          color="error"
+          variant="soft"
+          :title="errorMessage"
+          icon="i-heroicons-exclamation-triangle"
+        />
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <UButton
             color="neutral"
@@ -74,7 +111,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             />
           </UFormField>
 
-          <UButton type="submit" color="primary" block> Sign In </UButton>
+          <UButton type="submit" color="primary" block :loading="isLoading"> Sign In </UButton>
         </UForm>
 
         <div class="text-center text-sm">
