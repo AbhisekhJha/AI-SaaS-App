@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { sidebarRoutes } from "~~/constants/tools";
-const open = ref(false);
+import { sidebarRoutes } from '~~/constants/tools'
+import { ref } from 'vue'
+import { useAuth } from '~/composable/useAuth'
+
+const open = ref(false)
+const { user, logout } = useAuth()
+
+async function handleLogout() {
+  await logout()
+}
 </script>
 
 <template>
@@ -22,12 +29,10 @@ const open = ref(false);
         <template #header>
           <Logo />
           <UButton
-           
             color="neutral"
-            variantt="ghost"
+            variant="ghost"
             icon="i-lucide-x"
             @click="open = false"
-            
           />
         </template>
 
@@ -48,7 +53,30 @@ const open = ref(false);
           </div>
         </template>
       </UDrawer>
-      <ThemeToggler />
+
+      <!-- Right side: Theme toggle & User menu -->
+      <div class="flex items-center gap-2">
+        <ThemeToggler />
+        
+        <UDropdownMenu
+          v-if="user"
+          :items="[
+            [
+              {
+                label: 'Logout',
+                icon: 'i-lucide-log-out',
+                onSelect: handleLogout,
+              },
+            ],
+          ]"
+        >
+          <UButton color="neutral" variant="ghost" class="flex items-center gap-2">
+            <UIcon name="i-lucide-user" />
+            <span class="hidden sm:inline">{{ user.name || user.email }}</span>
+            <UIcon name="i-lucide-chevron-down" class="w-4 h-4" />
+          </UButton>
+        </UDropdownMenu>
+      </div>
     </UContainer>
   </div>
 </template>
