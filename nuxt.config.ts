@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
   
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_KEY,
+    geminiApiKey: process.env.NUXT_GEMINI_API_KEY,
     
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
