@@ -27,16 +27,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
    isLoading.value = true;
   errorMessage.value = "";
 
-   try {
+  try {
 
     
     
      await login(event.data.email, event.data.password);
-     toast.add({
-       title: "Login successful",
-       description: "Welcome back!",
-       color: "success",
-       duration: 1000,
+    toast.add({
+      title: "Login successful",
+      description: "Welcome back!",
+      color: "success",
+       duration: 2000,
      });
      await navigateTo("/dashboard");
   } catch (error:  any) {
@@ -49,55 +49,67 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <UContainer class="flex items-center justify-center sm:p-4 sm:min-w-160">
-    <UCard class="w-full max-w-md">
-      <template #header>
-        <div class="text-center mb-4">
-          <h2 class="text-xl font-semibold">Welcome to Nuxt AI</h2>
+  <div class="min-h-screen bg-black text-white flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 mb-4">
+          <UIcon name="i-heroicons-bolt" class="w-6 h-6 text-white" />
         </div>
-      </template>
-      <div class="space-y-4">
-        
+        <h1 class="text-2xl font-bold mb-2">Welcome back</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Sign in to continue to NuxtAI</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6">
+       
         <UAlert
           v-if="errorMessage"
           color="error"
           variant="soft"
           :title="errorMessage"
           icon="i-heroicons-exclamation-triangle"
+          class="mb-4"
         />
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+
+       
+        <div class="grid grid-cols-2 gap-3 mb-6">
           <UButton
             color="neutral"
             variant="outline"
             icon="i-mdi:google"
             class="justify-center"
-            :loading="false"
-            :disabled="false"
+            size="lg"
           >
-            Continue with Google
+            Google
           </UButton>
           <UButton
             color="neutral"
             variant="outline"
             icon="i-mdi:github"
             class="justify-center"
-            :loading="false"
-            :disabled="false"
+            size="lg"
           >
-            Continue with Github
+            GitHub
           </UButton>
         </div>
-        <USeparator label="OR" />
-        <UForm
-          :schema="schema"
-          :state="state"
-          class="space-y-4"
-          @submit="onSubmit"
-        >
+
+        
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200 dark:border-gray-700" />
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-3 bg-white dark:bg-gray-800/50 text-gray-500">or continue with email</span>
+          </div>
+        </div>
+
+        
+        <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
           <UFormField label="Email" name="email" required>
             <UInput
               v-model="state.email"
-              placeholder="Enter your email"
+              placeholder="you@example.com"
+              size="lg"
               class="w-full"
             />
           </UFormField>
@@ -106,27 +118,31 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <UInput
               v-model="state.password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="••••••••"
+              size="lg"
               class="w-full"
             />
           </UFormField>
 
-          <UButton type="submit" color="primary" block :loading="isLoading"> Sign In </UButton>
+          <UButton
+            type="submit"
+            block
+            size="lg"
+            :loading="isLoading"
+            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white mt-2"
+          >
+            Sign In
+          </UButton>
         </UForm>
 
-        <div class="text-center text-sm">
+        
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
           Don't have an account?
-          <UButton
-            variant="link"
-            color="primary"
-            :disabled="false"
-            to="/auth/register"
-            class="-ml-2"
-          >
+          <NuxtLink to="/auth/register" class="text-red-500 hover:text-red-600 font-medium">
             Sign up
-          </UButton>
-        </div>
+          </NuxtLink>
+        </p>
       </div>
-    </UCard>
-  </UContainer>
+    </div>
+  </div>
 </template>
