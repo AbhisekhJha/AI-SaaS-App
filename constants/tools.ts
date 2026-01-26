@@ -19,7 +19,7 @@ export const sidebarRoutes: NavigationMenuItem[][] = [
     {
       label: 'Blog Title Generator',
       icon: 'i-heroicons-light-bulb',
-      to: '/dashboard/generate-blog-title'
+      to: '/dashboard/blog-title'
     }
   ]
 ]
