@@ -15,7 +15,7 @@ const state = reactive<Partial<Schema>>({
   password: undefined,
 });
 
-const { login, isLoading, errorMessage, clearError } = useAuth();
+const { login, loginWithProvider, isLoading, errorMessage, clearError } = useAuth();
 const toast = useToast();
 
 onMounted(() => {
@@ -45,6 +45,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   } finally {
     isLoading.value = false;
   }
+}
+
+async function signInWithGoogle() {
+  await loginWithProvider('google')
+}
+
+async function signInWithGithub() {
+  await loginWithProvider('github')
 }
 </script>
 
@@ -79,6 +87,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             icon="i-mdi:google"
             class="justify-center"
             size="lg"
+            @click="signInWithGoogle"
           >
             Google
           </UButton>
@@ -88,6 +97,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             icon="i-mdi:github"
             class="justify-center"
             size="lg"
+            @click="signInWithGithub"
           >
             GitHub
           </UButton>
