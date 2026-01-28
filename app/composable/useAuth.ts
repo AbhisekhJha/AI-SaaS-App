@@ -1,6 +1,9 @@
+import { supabaseBrowserClient } from '~/utils/supabase'
 import type { User } from "~/types";
 
 export const useAuth = () => {
+  const supabase = supabaseBrowserClient()
+
   const user = useState<User | null>('user', () => null);
   const isLoading = useState<boolean>('auth-loading', () => false);
   const errorMessage = useState<string>('auth-error-message', () => '');
@@ -74,6 +77,52 @@ export const useAuth = () => {
     }
   }
 
+  const loginWithProvider = async (provider: 'google' | 'github') => {
+    isLoading.value = true
+    errorMessage.value = ''
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+    } catch (error: any) {
+      errorMessage.value = error?.message || 'Failed to login with provider'
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const completeOAuth = async () => {
+    isLoading.value = true
+    errorMessage.value = ''
+    try {
+      const { data, error } = await supabase.auth.getSession()
+
+      if (error || !data.session?.access_token) {
+        throw error || new Error('OAuth session not found')
+      }
+
+      await $fetch('/api/auth/oauth', {
+        method: 'POST',
+        body: { access_token: data.session.access_token },
+      })
+
+      await fetchUser()
+    } catch (error: any) {
+      errorMessage.value = error?.message || 'OAuth login failed'
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     user,
@@ -86,5 +135,7 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    loginWithProvider,
+    completeOAuth,
   }
 }
