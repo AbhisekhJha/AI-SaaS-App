@@ -16,9 +16,6 @@ export default defineNuxtConfig({
     ],
   },
   modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/ui',"nuxt-auth-utils"],
-  nitro: {
-    preset: 'netlify',
-  },
   runtimeConfig: {
   
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_KEY,
