@@ -11,14 +11,45 @@ export function useGemini(apiPath: string) {
     loading.value = true
     error.value = null
     result.value = ''
+
     try {
-      const res = await $fetch(apiPath, {
+      const response = await fetch(apiPath, {
         method: 'POST',
-        body
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       })
-      result.value = res as string
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        throw new Error(err.statusMessage || 'Request failed')
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error('No response body')
+
+      const decoder = new TextDecoder()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        for (const line of chunk.split('\n')) {
+          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            try {
+              const { content } = JSON.parse(line.slice(6))
+              if (content) {
+
+                for (const char of content) {
+                  result.value += char
+                  await new Promise(r => setTimeout(r, 5))
+                }
+              }
+            } catch {}
+          }
+        }
+      }
     } catch (e: any) {
-      error.value = e?.data?.statusMessage || e.message || 'Something went wrong'
+      error.value = e?.message || 'Something went wrong'
     } finally {
       loading.value = false
       await refreshUsage()
