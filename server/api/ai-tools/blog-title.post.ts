@@ -1,5 +1,6 @@
-import { consumeAiUsage } from '../../utils/aiUsage';
+import { consumeAiUsage } from '../../utils/aiUsage'
 import { openai } from '../../utils/openai'
+import { createStreamingResponse } from '../../utils/streaming'
 
 
 export default defineEventHandler( async(event) => {
@@ -29,8 +30,9 @@ export default defineEventHandler( async(event) => {
             }
         ],
         temperature: 0.7,
-        top_p: 0.9,
-        max_tokens: 400
-    });
-        return res.choices[0].message.content;
-    });
+        max_tokens: 800,
+        stream: true
+    })
+
+    return createStreamingResponse(event, res)
+})
