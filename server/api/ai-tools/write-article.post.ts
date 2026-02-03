@@ -1,5 +1,6 @@
 import { consumeAiUsage } from '../../utils/aiUsage'
 import { openai } from '../../utils/openai'
+import { createStreamingResponse } from '../../utils/streaming'
 
 export default defineEventHandler( async(event) => {
     const {articleTopic, articleTopicLength} = await readBody(event);
@@ -22,8 +23,9 @@ export default defineEventHandler( async(event) => {
             }
         ],
         temperature: 0.7,
-        top_p: 0.9,
-        max_tokens: Math.max(wordCount * 2, 800)
-    });
-        return res.choices[0].message.content;
-    });
+        max_tokens: Math.max(wordCount * 3, 2000),
+        stream: true
+    })
+
+    return createStreamingResponse(event, res)
+})
